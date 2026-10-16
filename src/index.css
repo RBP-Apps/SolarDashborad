@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-indigo: #4f46e5;
+  --primary-light: #f5f7ff;
+  --bg-white: #ffffff;
+  --border-light: #f1f5f9;
+}
+
+body {
+  background-color: var(--bg-white);
+  color: #334155;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  min-height: 100vh;
+}
+
+/* Page Content Container */
+.page-content {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  border: 1px solid var(--border-gray);
+  padding: 0.75rem;
+}
+
+/* Glass effect - Updated for professional look */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-backdrop {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Typography Overrides */
+.text-navy { color: var(--primary-navy); }
+.bg-navy { background-color: var(--primary-navy); }
+
+/* Animation - Subtle Floating */
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-soft-float {
+  animation: soft-float 4s ease-in-out infinite;
+}
+
+/* Standardized Card Style */
+.hr-card {
+  @apply bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300;
+}
+
+.hr-input {
+  @apply w-full px-3 py-1.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all;
+}
+
+.hr-button-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors shadow-sm active:transform active:scale-95;
+}
+
+.hr-button-secondary {
+  @apply bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium py-1.5 px-3.5 rounded-lg transition-colors;
+}
+
+/* Global Table Compaction */
+table th, table td {
+  padding: 0.5rem 1rem !important; /* Overriding common utility classes like px-6 py-4 */
+}
+
+/* Redefining some tailwind utility defaults if needed directly */
+
+/* Custom Subtle Pulse Animation */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.96; transform: scale(1.015); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s ease-in-out infinite;
+}
+
+/* Fix for iOS date inputs */
+input[type="date"], input[type="datetime-local"], input[type="time"], input[type="month"] {
+  -webkit-appearance: none;
+  min-height: 2.5rem;
+  background-color: white;
+}
+
+/* Number inputs behave like normal text inputs: no up/down spinner buttons (the wheel and arrow keys are blocked in main.jsx) */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Width of the sidebar on large screens (set by Layout): pop-ups centre in the area beside it */
+:root { --sidebar-w: 0px; }
+@media (min-width: 1024px) {
+  body[data-sidebar="open"] { --sidebar-w: 14rem; }
+  body[data-sidebar="collapsed"] { --sidebar-w: 4rem; }
+}
+@media (min-width: 1536px) {
+  body[data-sidebar="open"] { --sidebar-w: 15rem; }
+}
