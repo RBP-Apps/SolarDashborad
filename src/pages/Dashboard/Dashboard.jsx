@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import * as XLSX from 'xlsx';
 import { supabase, supabaseReady } from '../../lib/supabase';
 
 const columns = [
@@ -20,6 +19,13 @@ const columns = [
 ];
 
 const TABLE = 'kusum_land_proposals';
+const CACHE_KEY = 'proposals-cache-v1';
+
+// last result is kept in the browser so the table shows instantly on the next visit while fresh data loads in the background
+const readCache = () => {
+  try { const v = JSON.parse(localStorage.getItem(CACHE_KEY)); return Array.isArray(v) ? v : []; } catch { return []; }
+};
+const writeCache = (rows) => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(rows)); } catch { /* storage full or blocked */ } };
 
 const filterFields = [
   { key: 'district', label: 'District' },
@@ -39,19 +45,19 @@ const norm = (v) => String(v ?? '').trim().toLowerCase();
 const cell = (col, row) => (col.render ? col.render(row) : row[col.key] ?? '-');
 
 export default function Dashboard() {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState(readCache);
+  const [loading, setLoading] = useState(() => readCache().length === 0);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState(emptyFilters);
   const [selected, setSelected] = useState(null);
 
   const load = async (silent = false) => {
     if (!supabaseReady) { toast.error('Database is not configured'); setLoading(false); return; }
-    if (!silent) setLoading(true);
     const { data, error } = await supabase.from(TABLE).select('*').order('created_at', { ascending: false });
     setLoading(false);
     if (error) { if (!silent) toast.error(error.message || 'Could not load data'); return; }
     setRows(data || []);
+    writeCache(data || []);
   };
 
   useEffect(() => {
@@ -100,7 +106,8 @@ export default function Dashboard() {
   const clearAll = () => { setQuery(''); setFilters(emptyFilters); };
 
 
-  const exportExcel = () => {
+  const exportExcel = async () => {
+    const XLSX = await import('xlsx');
     const data = filtered.map((r) => Object.fromEntries(columns.map((c) => [c.label, cell(c, r)])));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
